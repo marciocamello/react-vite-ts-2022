@@ -1,11 +1,13 @@
-import { useCallback, useState } from "react"
+import { AxiosError, AxiosResponse } from "axios"
+import { ChangeEvent, useCallback, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { delTodo, getTodos, postTodo, updateTodo } from "../../services/todos"
+import { Todo } from "../../types/todo"
 
 export function Todos() {
 
     // selected state
-    const [selectedTodo, setSelectedTodo] = useState<any>(null)
+    const [selectedTodo, setSelectedTodo] = useState<Todo | null>()
 
     // Access the client
     const queryClient = useQueryClient()
@@ -16,7 +18,7 @@ export function Todos() {
     // Mutations
 
     // create mutation
-    const createTodoMutation: any = useMutation(postTodo, {
+    const createTodoMutation = useMutation<AxiosResponse, Error, Todo>(postTodo, {
         onSuccess: () => {
             // Invalidate and refetch
             queryClient.invalidateQueries('todos')
@@ -24,7 +26,7 @@ export function Todos() {
     })
 
     // update mutation
-    const updateTodoMutation: any = useMutation(updateTodo, {
+    const updateTodoMutation = useMutation<AxiosResponse, Error, Todo>(updateTodo, {
         onSuccess: () => {
             // Invalidate and refetch
             queryClient.invalidateQueries('todos')
@@ -32,7 +34,7 @@ export function Todos() {
     })
 
     // delete mutation
-    const deleteMutation: any = useMutation(delTodo, {
+    const deleteMutation = useMutation<AxiosResponse, Error, any>(delTodo, {
         onSuccess: () => {
             // Invalidate and refetch
             queryClient.invalidateQueries('todos')
@@ -50,7 +52,7 @@ export function Todos() {
     }
 
     // onchange todo form
-    const handleOnChangeTodo = (e: any) => {
+    const handleOnChangeTodo = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target
         setSelectedTodo({
             ...selectedTodo,
@@ -67,8 +69,10 @@ export function Todos() {
     }
 
     // delete todo
-    const handleDeleteTodo = useCallback((id: string) => {
-        deleteMutation.mutate(id)
+    const handleDeleteTodo = useCallback(({ id }: Todo) => {
+        if (id) {
+            deleteMutation.mutate(id)
+        }
     }, [])
 
     // loading
@@ -80,10 +84,10 @@ export function Todos() {
     return (
         <div>
             <ul>
-                {response?.data?.slice(0, 10).map((todo: any) => (
+                {response?.data?.map((todo: Todo) => (
                     <li key={todo.id}>
                         {todo.title}
-                        <button onClick={() => handleDeleteTodo(todo.id)}>DELETE</button>
+                        <button onClick={() => handleDeleteTodo(todo)}>DELETE</button>
                         <button onClick={() => setSelectedTodo(todo)}>EDIT</button>
                     </li>
                 ))}
