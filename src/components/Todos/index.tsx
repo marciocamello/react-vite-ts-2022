@@ -1,8 +1,11 @@
-import { AxiosError, AxiosResponse } from "axios"
+import { AxiosResponse } from "axios"
 import { ChangeEvent, useCallback, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { delTodo, getTodos, postTodo, updateTodo } from "../../services/todos"
+
 import { Todo } from "../../types/todo"
+
+import { TodoListForm, TodosList, TodosListAction, TodosListButton, TodosListInput, TodosListItem } from "./styles"
 
 export function Todos() {
 
@@ -45,9 +48,8 @@ export function Todos() {
 
     // create todo
     const handleCreateTodo = () => {
-        createTodoMutation.mutate({
-            completed: false,
-            title: 'Teste marcio',
+        setSelectedTodo({
+            title: ""
         })
     }
 
@@ -63,9 +65,13 @@ export function Todos() {
     // save todo
     const handleSaveTodo = () => {
         if (selectedTodo) {
-            updateTodoMutation.mutate(selectedTodo)
-            setSelectedTodo(null)
+
+            selectedTodo?.id
+                ? updateTodoMutation.mutate(selectedTodo)
+                : createTodoMutation.mutate(selectedTodo)
         }
+
+        setSelectedTodo(null)
     }
 
     // delete todo
@@ -83,32 +89,36 @@ export function Todos() {
 
     return (
         <div>
-            <ul>
+            <TodosList>
                 {response?.data?.map((todo: Todo) => (
-                    <li key={todo.id}>
+                    <TodosListItem key={todo.id}>
                         {todo.title}
-                        <button onClick={() => handleDeleteTodo(todo)}>DELETE</button>
-                        <button onClick={() => setSelectedTodo(todo)}>EDIT</button>
-                    </li>
+                        <TodosListAction>
+                            <TodosListButton onClick={() => handleDeleteTodo(todo)}>DELETE</TodosListButton>
+                            <TodosListButton onClick={() => setSelectedTodo(todo)}>EDIT</TodosListButton>
+                        </TodosListAction>
+                    </TodosListItem>
                 ))}
-            </ul>
+            </TodosList>
 
-            <button
+            <TodosListButton
                 onClick={handleCreateTodo}
             >
                 Add Todo
-            </button>
+            </TodosListButton>
 
-            {selectedTodo && <div>
+            {selectedTodo && <TodoListForm
+                noValidate
+            >
                 <>
-                    <input
+                    <TodosListInput
                         name="title"
                         value={selectedTodo.title}
                         onChange={handleOnChangeTodo}
                     />
-                    <button onClick={handleSaveTodo}>SAVE</button>
+                    <TodosListButton onClick={handleSaveTodo}>SAVE</TodosListButton>
                 </>
-            </div>}
+            </TodoListForm>}
         </div>
     )
 }

@@ -10,7 +10,7 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Todos />
-            <ReactQueryDevtools initialIsOpen={false} />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         </QueryClientProvider>
     )
 }

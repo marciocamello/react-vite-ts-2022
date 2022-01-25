@@ -1,26 +1,3 @@
 {
-  "todos": [
-    {
-      "userId": 1,
-      "id": 1,
-      "title": "delectus aut autem",
-      "completed": false
-    },
-    {
-      "userId": 1,
-      "id": 2,
-      "title": "quis ut nam facilis et officia qui",
-      "completed": false
-    },
-    {
-      "completed": false,
-      "title": "Teste marcio",
-      "id": 3
-    },
-    {
-      "completed": false,
-      "title": "Teste marcio",
-      "id": 4
-    }
-  ]
+  "todos": []
 }
